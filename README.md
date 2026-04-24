@@ -1,107 +1,231 @@
-# Aura Health AI
+# Aura Health AI - Neural Triage
 
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
-![Maintained](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
+Aura Health AI is a single-page, front-end health assistant built in pure HTML, CSS, and JavaScript. It provides an interactive chat-style experience for symptom triage, optional image-based analysis, quick symptom prompts, body-map and pain-scale inputs, voice features, and PDF export.
 
-*An intelligent, multilingual health triage assistant powered by AI and Web Speech technology.*
+The application uses the Gemini model API directly from the browser to generate responses.
+
+## Table of Contents
+
+- Overview
+- Features
+- Tech Stack
+- Project Structure
+- How the App Works
+- Getting Started
+- Gemini API Configuration
+- Usage Guide
+- Safety and Disclaimer
+- Security Considerations
+- Browser Support
+- Troubleshooting
+- Future Improvements
+
+## Overview
+
+This project is designed as an educational and demo healthcare assistant experience with a polished UI and rich interactions. It does not use a backend server and runs as a static page.
+
+Core idea:
+- User enters symptoms (text, voice, body map, pain scale, or image)
+- App sends request to Gemini API
+- AI returns structured guidance with follow-up suggestion chips
+- User can continue the triage conversation
+
+## Features
+
+### 1. Conversational Symptom Triage
+- Chat-based interface with user and assistant message bubbles
+- Typing indicator while waiting for AI response
+- Suggestions as clickable follow-up chips
+- Structured assistant output sections (possible causes, actions, urgent care cues)
+
+### 2. Image Attachment and Analysis
+- Upload image files (PNG, JPG, WEBP)
+- Preview before sending
+- Remove image before submit
+- Sends image as inline base64 data to Gemini for multimodal analysis
+
+### 3. Guided Input Tools
+- Quick action symptom presets from left sidebar
+- Interactive body map modal (head, neck, chest, stomach, arms, legs)
+- Pain intensity modal with 1-10 slider and emoji severity feedback
+
+### 4. Voice Capabilities
+- Speech-to-text input using Web Speech Recognition
+- Text-to-speech playback of the latest AI reply
+- Voice selection dropdown for TTS voice choice
+- Language-aware speech recognition toggle (English/Hindi)
+
+### 5. Session Controls
+- Light/dark theme toggle
+- Export chat session as PDF (html2pdf)
+- Clear conversation session
+
+### 6. Responsive UI
+- Desktop: dual sidebars + center chat
+- Mobile: collapsible left sidebar and optimized controls
+- Animated backgrounds, rings, and status visuals
+
+## Tech Stack
+
+- HTML5
+- CSS3 (custom properties, animations, responsive media queries)
+- Vanilla JavaScript (no build system)
+- External libraries/CDNs:
+  - Font Awesome (icons)
+  - Google Fonts (Syne, DM Sans)
+  - html2pdf.js (PDF generation)
+- Browser APIs:
+  - Fetch API
+  - Web Speech API (SpeechRecognition, SpeechSynthesis)
+  - FileReader API
+
+## Project Structure
+
+This repository currently uses a single-file architecture:
+
+- index.html: full application (markup, styles, and script)
+
+Generated output at runtime:
+- Aura-Health-AI-Session.pdf: downloaded chat transcript (on user action)
+
+## How the App Works
+
+### UI Layer
+The page renders:
+- Left sidebar: quick prompts and mock vitals cards
+- Center area: chat header, message thread, attachment preview, chips, input controls
+- Right sidebar: informational cards (monitoring, AI engine status, disclaimer)
+
+### Interaction Layer
+Event handlers are attached after DOMContentLoaded for:
+- Sending messages
+- Quick prompt clicks
+- Sidebar open/close
+- Modal open/close
+- Voice input start/stop
+- Theme toggle
+- Session clear and PDF export
+
+### AI Request Flow
+1. Collect text input and optional image attachment
+2. Build a prompt instructing structured medical-style output and chip format
+3. Send request to Gemini endpoint
+4. Parse response text
+5. Extract [CHIP: ...] tags using regex
+6. Render response and clickable suggestion chips
+
+### Message Rendering
+- User messages are rendered as text (and optional image)
+- Bot messages are rendered as HTML to preserve semantic structure
+- Markdown-style bold (**) is converted to strong tags
+
+## Getting Started
+
+### Option A: Run directly
+1. Clone or download the repository
+2. Open index.html in a modern browser
+
+### Option B: Serve locally (recommended)
+Using any static server helps avoid some browser constraints:
+
+- Python:
+  python -m http.server 5500
+
+Then open:
+- http://localhost:5500
+
+## Gemini API Configuration
+
+The app currently defines a Gemini API key directly in client-side JavaScript.
+
+Location in code:
+- index.html -> JavaScript section -> GEMINI_API_KEY constant
+
+To configure:
+1. Replace the placeholder/key string with your own valid Gemini API key
+2. Reload the page
+
+Important:
+- Exposing API keys in frontend code is insecure for production
+- For production, move API calls behind a backend proxy and store keys in server environment variables
+
+## Usage Guide
+
+1. Enter symptoms in the input box and click send
+2. Optionally upload a report/image before sending
+3. Use quick prompts for common symptom combinations
+4. Use body map and pain scale for guided input
+5. Use voice input for hands-free symptom entry
+6. Use read-aloud for AI responses
+7. Export conversation to PDF if needed
+
+## Safety and Disclaimer
+
+This project is educational and not a medical device.
+
+- It does not provide professional diagnosis or treatment
+- Users should consult qualified healthcare professionals
+- In emergency situations, contact local emergency services immediately
+
+## Security Considerations
+
+Current implementation considerations:
+
+- API key exposure risk: key is embedded in frontend JavaScript
+- No authentication or usage quota control at app level
+- Bot response HTML is inserted into the DOM (trusted API source assumed)
+
+Recommended hardening:
+
+- Move AI calls to backend API
+- Keep API key in server-side secret store
+- Add response sanitization/allowlist if rendering HTML
+- Add rate limiting and abuse protection
+- Add CSP and stricter security headers when deployed
+
+## Browser Support
+
+Best experience:
+- Latest Chrome/Edge/Firefox
+
+Notes:
+- SpeechRecognition support is browser-dependent
+- Microphone use requires user permission
+- Some mobile browsers may limit speech features
+
+## Troubleshooting
+
+### No AI response
+- Verify API key is valid
+- Check network connectivity
+- Confirm Gemini endpoint quota/limits are not exceeded
+
+### Voice input does not work
+- Ensure browser supports SpeechRecognition
+- Grant microphone permissions
+- Try HTTPS or localhost context when required
+
+### PDF export fails
+- Ensure html2pdf CDN is reachable
+- Retry with fewer/shorter chat entries if memory constrained
+
+### Empty or malformed AI output
+- Temporary model/network issue
+- Retry request
+- Confirm API response schema still matches parser expectations
+
+## Future Improvements
+
+- Split code into modular files:
+  - index.html
+  - styles.css
+  - app.js
+- Add backend proxy for secure API usage
+- Add persistent chat history storage
+- Add multilingual UI labels (not only AI output language)
+- Add real medical knowledge guardrails and risk scoring workflow
+- Add test coverage and linting pipeline
 
 ---
 
-![Aura Health AI Demo](https://i.ibb.co/bJCZzX1/aura-health-ai-demo.png)
-
-## 📖 Table of Contents
-
-- [About the Project](#-about-the-project)
-- [🚀 Core Functionalities (Step-by-Step)](#-core-functionalities-step-by-step)
-  - [1. AI Symptom Analysis](#1-ai-symptom-analysis)
-  - [2. Voice Input (Speech-to-Text)](#2-voice-input-speech-to-text)
-  - [3. Voice Narration (Text-to-Speech)](#3-voice-narration-text-to-speech)
-  - [4. Responsive & Informative UI](#4-responsive--informative-ui)
-- [🛠️ Tech Stack](#️-tech-stack)
-- [⚙️ Getting Started](#️-getting-started)
-- [⚠️ Disclaimer](#️-disclaimer)
-- [📄 License](#-license)
-
-## 📖 About the Project
-
-Aura Health AI is a web-based, multilingual health triage assistant designed to provide users with immediate, preliminary guidance on their health symptoms. In a world where access to quick medical advice can be challenging, this application serves as a responsible first step, helping users articulate their symptoms and understand potential next steps for seeking professional care.
-
-Powered by a sophisticated large language model, Aura Health AI analyzes user input to generate structured, easy-to-understand advice while consistently emphasizing the importance of consulting a professional.
-
-## 🚀 Core Functionalities (Step-by-Step)
-
-This application integrates several modern web technologies to provide a seamless and accessible user experience.
-
-### 1. AI Symptom Analysis
-
-The primary feature is the AI-powered analysis, which is fully bilingual.
-
-1.  **Enter Symptoms:** Users can type their health concerns into the main text area.
-2.  **Select Output Language:** Using the **"AI Output Language"** dropdown, users choose whether they want the response in **English** or **Hindi**.
-3.  **Analyze:** Upon clicking the "Analyze" button, a request is sent to the SambaNova AI API, including the user's symptoms and the chosen language instruction.
-4.  **Receive Guidance:** The AI's structured response is displayed in the selected language.
-
-### 2. Voice Input (Speech-to-Text)
-
-For hands-free interaction, users can speak their symptoms directly into the application.
-
-1.  **Select Input Language:** Users first choose their speaking language (English or Hindi) from the **"Voice Input Language"** dropdown.
-2.  **Activate Microphone:** Clicking the microphone icon activates the browser's speech recognition.
-3.  **Transcribe:** The user's speech is automatically transcribed and populated into the symptom text area, ready for analysis.
-
-### 3. Voice Narration (Text-to-Speech)
-
-To enhance accessibility, the AI's response can be read aloud.
-
-1.  **Select a Voice:** After an AI response appears, a dropdown menu is dynamically populated with all voice options available in the user's browser.
-2.  **Listen:** The user can select a preferred voice (e.g., a Hindi voice for a Hindi response) and click the "Listen" button.
-3.  **Control Playback:** The button toggles between a "Play" and "Stop" state, allowing the user to start and stop the narration at any time.
-
-### 4. Responsive & Informative UI
-
-The user interface is designed to be both intuitive and responsible.
-
--   **Three-Column Layout:** On desktop screens, the application features a professional three-column layout. The central column houses the main tool, while the sidebars provide persistent, helpful information. On mobile devices, these columns stack vertically for a seamless experience.
--   **Usage Tips:** The left sidebar provides users with clear instructions on how to phrase their symptoms to get the most accurate AI-generated guidance.
--   **Emergency Warnings:** The right sidebar contains a crucial, highly visible list of symptoms that require immediate medical attention, ensuring user safety.
-
-## 🛠️ Tech Stack
-
-This project is a single-file web application built with client-side technologies:
-
--   **HTML5**
--   **Tailwind CSS** (via CDN)
--   **JavaScript (ES6+)**
--   **Web Speech API** (for Speech-to-Text and Text-to-Speech)
--   **SambaNova AI API**
-
-## ⚙️ Getting Started
-
-To get a local copy up and running, follow these simple steps.
-
-1.  Clone the repository:
-    ```bash
-    git clone [https://github.com/your-username/aura-health-ai.git](https://github.com/your-username/aura-health-ai.git)
-    ```
-2.  Navigate into the project directory:
-    ```bash
-    cd aura-health-ai
-    ```
-3.  **IMPORTANT: Add Your API Key**
-    -   Open the `index.html` file in a text editor.
-    -   Find the JavaScript section and replace the placeholder API key with your own SambaNova AI key:
-        ```javascript
-        const API_KEY = 'YOUR_SAMBANOVA_API_KEY_HERE';
-        ```
-4.  Open the `index.html` file in your browser to run the application.
-
-## ⚠️ Disclaimer
-
-> **Important Medical Disclaimer**
->
-> Aura Health AI is an informational tool and is **not** a substitute for professional medical diagnosis, advice, or treatment. It is intended for preliminary guidance only. Always consult a qualified healthcare provider for any medical concerns or before making any decisions related to your health. Do not disregard professional medical advice or delay in seeking it because of something you have read or heard from this application.
-
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
+If you are maintaining this project, first priority should be securing API access with a backend layer before any public deployment.
